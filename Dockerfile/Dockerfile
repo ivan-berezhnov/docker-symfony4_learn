@@ -44,7 +44,7 @@ RUN { \
     } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Set work directory.
-WORKDIR /var/www/web
+WORKDIR /var/www/symfony
 
 
 #	&& chown -R www-data:www-data sites modules themes
