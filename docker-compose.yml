@@ -1,0 +1,64 @@
+version: '2'
+
+networks:
+  sdnet:
+    driver: "bridge"
+
+services:
+ 
+  # Add web contener.
+  drupal:
+    image: php:7.0-apache
+    container_name: symfony-web
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./symfony:/var/www/html
+    links:
+      - mysql
+    networks:
+      - sdnet
+  
+  # Add MariaDB contener.
+  mysql:
+    image: mariadb
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --init-connect='SET NAMES UTF8;'
+    container_name: symfony-mariadb
+    restart: always
+    volumes:
+      - ./mariadb/date:/var/lib/mysql:rw
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345
+      - MYSQL_DATABASE=symfony
+    ports:
+      - 3307:3307
+    networks:
+      - sdnet
+
+  # Add Adminer contener.
+  adminer:
+    image: clue/adminer
+    container_name: symfony-adminer
+    ports:
+      - 8081:80
+    environment:
+      - MYSQL_USERNAME=root
+      - MYSQL_ROOT_PASSWORD=12345
+    links:
+      - mysql
+    networks:
+      - sdnet
+
+  # Add PHPMyAdmin contener.
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   container_name: "${PROJECT_NAME}-phpmyadmin"
+  #   links:
+  #     - mysql
+  #   ports:
+  #     - 8082:80
+  #   environment:
+  #     - MYSQL_USERNAME=root
+  #     - MYSQL_ROOT_PASSWORD=1234
+  #     - PMA_HOST=mysql
